@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browse Items</title>
+<style>
+body { font-family: sans-serif; background: #f4f4f4; padding: 50px; }
+h2 { text-align: center; margin-bottom: 30px; color: #333; }
+.item { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; position: relative; }
+.item img { max-width: 100%; border-radius: 10px; margin-top: 10px; }
+.item-type { font-weight: bold; margin-bottom: 5px; }
+button { padding: 8px 15px; background: #2196F3; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+button:hover { background: #1976D2; }
+
+#claimModal {
+  display: none;
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#claimForm {
+  background: #fff; 
+  padding: 25px; 
+  border-radius: 12px; 
+  width: 400px; 
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+input { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; }
+.success { color: green; font-weight: bold; margin-top: 10px; text-align:center; }
+.error { color: red; font-weight: bold; margin-top: 10px; text-align:center; }
+.closeBtn { background:red; margin-left: 10px; }
+</style>
+</head>
+<body>
+
+<h2>All Items</h2>
+<div id="itemsContainer"></div>
+
+<!-- Claim Modal -->
+<div id="claimModal">
+  <div id="claimForm">
+    <h3>Claim Ownership</h3>
+    <p id="claimItemName"></p>
+    <div id="questionsDiv"></div>
+    <button id="submitClaim">Submit Claim</button>
+    <button class="closeBtn" onclick="closeClaim()">Close</button>
+    <p id="claimResult"></p>
+  </div>
+</div>
+
+<script>
+let container = document.getElementById('itemsContainer');
+let items = JSON.parse(localStorage.getItem('allItems') || '[]');
+let quizzes = JSON.parse(localStorage.getItem('proofQuizzes') || '[]');
+let currentItemIndex = null;
+
+// Function to render all items
+function renderItems() {
+    container.innerHTML = '';
+    if(items.length === 0){
+        container.innerHTML = "<p style='text-align:center;'>No items submitted yet.</p>";
+        return;
+    }
+    items.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+            <div class="item-type">${item.type === 'lost' ? 'Lost Item' : 'Found Item'}</div>
+            <h3>${item.name}</h3>
+            <p><strong>Description:</strong> ${item.desc}</p>
+            <p><strong>Location:</strong> ${item.loc}</p>
+            <p><strong>Date:</strong> ${item.date}</p>
+            ${item.photo ? `<img src="${item.photo}" alt="Item Photo">` : ''}
+            <button onclick="openClaim(${index})">Claim Ownership</button>
+        `;
+        container.appendChild(div);
+    });
+}
+renderItems();
+
+// Claim modal logic
+const claimModal = document.getElementById('claimModal');
+const questionsDiv = document.getElementById('questionsDiv');
+const claimItemName = document.getElementById('claimItemName');
+const claimResult = document.getElementById('claimResult');
+
+function openClaim(index){
+    currentItemIndex = index;
+    const item = items[index];
+    claimItemName.textContent = `Item: ${item.name}`;
+    claimResult.textContent = '';
+    questionsDiv.innerHTML = '';
+
+    const quiz = quizzes.find(q => q.itemName === item.name);
+    if(!quiz){
+        questionsDiv.innerHTML = "<p>No quiz available for this item.</p>";
+        claimModal.style.display = 'flex';
+        return;
+    }
+
+    quiz.questions.forEach((q,i)=>{
+        if(q.q){
+            const qLabel = document.createElement('label');
+            qLabel.textContent = q.q;
+            const qInput = document.createElement('input');
+            qInput.type = 'text';
+            qInput.id = 'answer'+i;
+            questionsDiv.appendChild(qLabel);
+            questionsDiv.appendChild(qInput);
+        }
+    });
+
+    claimModal.style.display = 'flex';
+}
+
+// Submit claim
+document.getElementById('submitClaim').addEventListener('click', ()=>{
+    const item = items[currentItemIndex];
+    const quiz = quizzes.find(q => q.itemName === item.name);
+    if(!quiz){
+        claimResult.textContent = "No quiz available.";
+        claimResult.className = 'error';
+        return;
+    }
+
+    let correctCount = 0;
+    quiz.questions.forEach((q,i)=>{
+        const ans = document.getElementById('answer'+i).value.trim().toLowerCase();
+        if(ans && ans === q.a.trim().toLowerCase()){
+            correctCount++;
+        }
+    });
+
+    if(correctCount >= 2){
+        claimResult.textContent = `Claim Successful! Contact phone: ${quiz.phone}`;
+        claimResult.className = 'success';
+        // Remove the item from items array
+        items.splice(currentItemIndex, 1);
+        localStorage.setItem('allItems', JSON.stringify(items));
+        // Re-render items after short delay to show success message
+        setTimeout(()=>{
+            closeClaim();
+            renderItems();
+        }, 2000);
+    } else {
+        claimResult.textContent = `Claim Failed. At least 2 correct answers needed.`;
+        claimResult.className = 'error';
+    }
+});
+
+function closeClaim(){
+    claimModal.style.display = 'none';
+}
+</script>
+
+</body>
+</html>
