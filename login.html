@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Lost & Found - Login</title>
+  <style>
+    body { font-family: 'Poppins', sans-serif; background:#f2f2f2; display:flex; justify-content:center; align-items:center; height:100vh; }
+    .container { background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); width:350px; }
+    h2 { text-align:center; color:#333; margin-bottom:20px; }
+    input { width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:6px; }
+    button { width:100%; padding:10px; background:#4CAF50; color:white; font-size:16px; border-radius:6px; border:none; cursor:pointer; margin-top:10px; }
+    button:hover { background:#45a049; }
+    .toggle-link { text-align:center; margin-top:15px; }
+    .toggle-link a { color:#4CAF50; text-decoration:none; cursor:pointer; }
+    .toggle-link a:hover { text-decoration:underline; }
+    .hidden { display:none; }
+    .message { text-align:center; color:red; margin-top:10px; font-size:14px; }
+  </style>
+</head>
+<body>
+
+<div class="container" id="login-container">
+  <h2>Login</h2>
+  <input type="text" id="login-username" placeholder="Username or Email">
+  <input type="password" id="login-password" placeholder="Password">
+  <button onclick="loginUser()">Login</button>
+  <div class="toggle-link">
+    New User? <a onclick="showRegister()">Register Here</a>
+  </div>
+  <div class="message" id="login-msg"></div>
+</div>
+
+<div class="container hidden" id="register-container">
+  <h2>Register</h2>
+  <input type="text" id="reg-name" placeholder="Full Name">
+  <input type="email" id="reg-email" placeholder="Email">
+  <input type="password" id="reg-password" placeholder="Password">
+  <input type="password" id="reg-confirm" placeholder="Confirm Password">
+  <input type="tel" id="reg-phone" placeholder="Phone Number (optional)">
+  <button onclick="registerUser()">Register</button>
+  <div class="toggle-link">
+    Already have an account? <a onclick="showLogin()">Login Here</a>
+  </div>
+  <div class="message" id="reg-msg"></div>
+</div>
+
+<script>
+  // Show Register Page
+  function showRegister() {
+    document.getElementById('login-container').classList.add('hidden');
+    document.getElementById('register-container').classList.remove('hidden');
+  }
+
+  // Show Login Page
+  function showLogin() {
+    document.getElementById('register-container').classList.add('hidden');
+    document.getElementById('login-container').classList.remove('hidden');
+  }
+
+  // Store users in localStorage
+  function getUsers() {
+    return JSON.parse(localStorage.getItem('users') || "[]");
+  }
+  function saveUsers(users) {
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+
+  // Register User
+  function registerUser() {
+    const name = document.getElementById('reg-name').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    const confirm = document.getElementById('reg-confirm').value;
+    const phone = document.getElementById('reg-phone').value;
+
+    if (!name || !email || !password || !confirm) {
+      document.getElementById('reg-msg').innerText = "Please fill all required fields!";
+      return;
+    }
+
+    if (password !== confirm) {
+      document.getElementById('reg-msg').innerText = "Passwords do not match!";
+      return;
+    }
+
+    let users = getUsers();
+    if (users.find(u => u.email === email)) {
+      document.getElementById('reg-msg').innerText = "User already exists!";
+      return;
+    }
+
+    users.push({name, email, password, phone});
+    saveUsers(users);
+    document.getElementById('reg-msg').style.color = 'green';
+    document.getElementById('reg-msg').innerText = "Registered successfully! Redirecting to login...";
+    setTimeout(showLogin, 1500);
+  }
+
+  // Login User
+  function loginUser() {
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+
+    let users = getUsers();
+    const user = users.find(u => (u.email === username || u.name === username) && u.password === password);
+
+    if (user) {
+      // Save logged-in user for dashboard (optional)
+      localStorage.setItem('loggedInUser', JSON.stringify(user));
+      alert(`Welcome, ${user.name}!`);
+      window.location.href = "dashboard.html"; // Redirect to dashboard
+    } else {
+      document.getElementById('login-msg').innerText = "Invalid username or password!";
+    }
+  }
+</script>
+
+</body>
+</html>
