@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lost Item Details</title>
+  <style>
+    body { background: #e0f0ff; font-family: sans-serif; display: flex; justify-content: center; padding: 50px; }
+    .card { background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 400px; }
+    label { display: block; margin-top: 15px; color: #333; }
+    input, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; margin-top: 5px; }
+    textarea { min-height: 60px; }
+    button { margin-top: 20px; padding: 12px; width: 100%; background: #2196F3; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+    button:hover { background: #1976D2; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2 style="text-align:center;">Lost Item Details</h2>
+  <label>Item Name:</label>
+  <input type="text" id="itemName" placeholder="Enter item name">
+  
+  <label>Description:</label>
+  <textarea id="itemDescription" placeholder="Enter description"></textarea>
+  
+  <label>Location:</label>
+  <input type="text" id="itemLocation" placeholder="Enter location">
+  
+  <label>Date:</label>
+  <input type="date" id="itemDate">
+  
+  <label>Upload Photo (Optional):</label>
+  <input type="file" id="itemPhoto" accept="image/*">
+  
+  <button id="submitBtn">Submit</button>
+</div>
+
+<script>
+  const submitBtn = document.getElementById('submitBtn');
+  const itemPhotoInput = document.getElementById('itemPhoto');
+
+  submitBtn.addEventListener('click', () => {
+    const name = document.getElementById('itemName').value.trim();
+    const desc = document.getElementById('itemDescription').value.trim();
+    const loc = document.getElementById('itemLocation').value.trim();
+    const date = document.getElementById('itemDate').value;
+
+    if(!name || !desc || !loc || !date){
+      alert("Please fill all fields.");
+      return;
+    }
+
+    const file = itemPhotoInput.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = function(e){
+        saveItem({type:'lost', name, desc, loc, date, photo:e.target.result});
+      }
+      reader.readAsDataURL(file);
+    } else {
+      saveItem({type:'lost', name, desc, loc, date, photo:null});
+    }
+  });
+
+  function saveItem(item){
+    let items = JSON.parse(localStorage.getItem('allItems') || '[]');
+    items.push(item);
+    localStorage.setItem('allItems', JSON.stringify(items));
+    alert("Lost item submitted successfully!");
+    window.location.href = "browse_item.html";
+  }
+</script>
+
+</body>
+</html>
