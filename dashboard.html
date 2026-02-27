@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; font-family:'Roboto',sans-serif; }
+    body { background-color: #f2f2f2; padding: 40px; }
+    h1 { text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 50px; color: #333; }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 180px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-align: center;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .card svg { width: 40px; height: 40px; margin-bottom: 15px; fill: white; }
+    .card-title { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
+    .card-subtext { font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.85); }
+
+    /* Card Colors */
+    .orange { background-color: #FF7F50; }       /* Lost Items */
+    .green { background-color: #4CAF50; }        /* Found Items */
+    .baby-pink { background-color: #FFB6C1; }    /* Browse Item */
+    .blue { background-color: #2196F3; }         /* Digital Receipt */
+    .purple { background-color: #9C27B0; }       /* Proof-of-Ownership Quiz */
+  </style>
+</head>
+<body>
+
+<h1>Dashboard</h1>
+
+<div class="dashboard">
+
+  <!-- Lost Items -->
+  <div class="card orange" onclick="window.location.href='lost_item_details.html'">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M7 14a5 5 0 1 0-1-9.9V2h2v2.1A5 5 0 0 0 7 14zm-4 7h2v-2h2v-2H5v4H3v-2H1v4h2v-2z"/>
+    </svg>
+    <div class="card-title">Lost Items</div>
+  </div>
+
+  <!-- Found Items -->
+  <div class="card green" onclick="window.location.href='found_item_details.html'">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M21 7H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zm-1 2v2h-2v-2h2zm0 4v2h-2v-2z"/>
+    </svg>
+    <div class="card-title">Found Items</div>
+  </div>
+
+  <!-- Browse Item -->
+  <div class="card baby-pink" onclick="window.location.href='browse_item.html'">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M21.71 20.29l-3.388-3.388A8.932 8.932 0 0 0 18 10a9 9 0 1 0-9 9 8.932 8.932 0 0 0 6.902-3.678l3.388 3.388a1 1 0 0 0 1.414-1.414zM4 10a6 6 0 1 1 6 6 6 6 0 0 1-6-6z"/>
+    </svg>
+    <div class="card-title">Browse Item</div>
+    <div class="card-subtext">Search</div>
+  </div>
+
+  <!-- Digital Receipt -->
+  <div class="card blue" onclick="window.location.href='digital_receipt.html'">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M3 3h18v18H3V3zm16 16V5H5v14h14zm-9-3h4v2h-4v-2zm0-4h4v2h-4v-2zm0-4h4v2h-4V8z"/>
+    </svg>
+    <div class="card-title">Digital Receipt</div>
+    <div class="card-subtext">Generate</div>
+  </div>
+
+  <!-- Proof-of-Ownership Quiz -->
+  <div class="card purple" onclick="window.location.href='proof_of_ownership_quiz.html'">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8
+      8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+    </svg>
+    <div class="card-title">Proof-of-Ownership Quiz</div>
+    <div class="card-subtext">Verify Item</div>
+  </div>
+
+</div>
+
+</body>
+</html>
